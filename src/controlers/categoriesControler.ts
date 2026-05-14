@@ -1,29 +1,40 @@
 import { Request, Response  } from "express";
 import { Category  } from "../types/category";
+import { prisma } from "../lib/db.js";
 
 let category: Category  [] = [];
 
 //1. menampilkan Event
-export const getCategory = (req: Request, res: Response) => {
-    res.json(category);   
+export const getCategory = async (req: Request, res: Response) => {
+    try {
+        const allEvents = await prisma.category.findMany({
+            orderBy: {
+                createdAt:"desc"
+            },
+        });
+        res.json(allEvents); 
+    } catch (error) {
+        res.status(500).json({
+            message:"gagal ambil data event",
+            error,
+        });
+    }
 };
 
 // menyimpan data event
-export const saveCategory = (req: Request, res: Response) => {
-    const {name} = req.body;
+export const saveCategory = async (req: Request, res: Response) => {
+    const {name, createdAd} = req.body;
     
         // validasi sederhana
         if(!name) {
             res.status(500).json({message: "yaa erorr"})
         }
         //validasi berhsail
-        const newCategory : Category = {
-            id: Date.now(),
-            name: name,
-        };
-
-        category.push(newCategory);
-        res.status(200).json({message : "Data berhasil disimpan", event: newCategory});
+        const newCategory = await prisma.category.create({
+            data:{
+                name,
+            },
+        });
 }
 
 // menampilkan data category berdasrkan id

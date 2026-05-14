@@ -1,5 +1,5 @@
 import { Request, Response  } from "express";
-import { Event  } from "../types/event";
+import { Event  } from "../types/event.js";
 
 let events: Event[] = [];
 
